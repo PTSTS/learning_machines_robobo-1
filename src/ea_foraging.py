@@ -23,7 +23,7 @@ from blob_detection import detect
 import calendar
 from datetime import datetime
 
-seed = 111
+# seed = 111
 def seed_everything(seed):
     """"
     Seed everything.
@@ -31,7 +31,7 @@ def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
-seed_everything(seed)
+# seed_everything(seed)
 timestamp = calendar.timegm(time.gmtime())
 
 NUMBER_OF_GENERATIONS = 20
@@ -59,6 +59,7 @@ def fitness(c, weights):
     rob.set_phone_tilt(0.8, 50)
     fitness_score = 0
     controller = c(weights, 7, 2, 2)
+    fitness = []
     for i in range(5):
         while (rob.is_simulation_running()):
             pass
@@ -70,17 +71,17 @@ def fitness(c, weights):
             detection_x, detection_y = detect(rob.get_image_front())
 
             if detection_x is False:
-                detection_x, detection_y = 0.5, -1
+                detection_x, detection_y = 0.5, 0
             else:
-                detection_x, detection_y = detection_x / 128, detection_y / 128
+                detection_x, detection_y = detection_x / 128, 0.5 + detection_y / 256
             inputs = sensors + [detection_x, detection_y]
             x, y = controller.act(inputs)
             rob.move(float(x), float(y), 500)
-
-        fitness_score += rob.collected_food()
+        fitness.append(rob.collected_food())
+        # fitness_score += rob.collected_food()
 
         rob.stop_world()
-
+    fitness_score  = sum(fitness) - np.std(fitness)
     print('working')
     print(fitness_score)
     return [fitness_score]
