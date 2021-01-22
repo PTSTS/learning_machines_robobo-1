@@ -27,6 +27,7 @@ def main():
     image = rob.get_image_front()
     print(blob_detection.detect(image))
     cv2.imwrite("test_pictures.png",image)
+    blob_detection.detect(image)
     exit()
     # Following code moves the robot
     for i in range(10):
