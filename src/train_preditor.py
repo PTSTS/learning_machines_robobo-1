@@ -35,7 +35,7 @@ def seed_everything(seed):
 # seed_everything(seed)
 timestamp = calendar.timegm(time.gmtime())
 
-NUMBER_OF_GENERATIONS = 20
+NUMBER_OF_GENERATIONS = 15
 NUMBER_OF_INPUTS = 7
 NUMBER_OF_OUTPUTS = 2
 NUMBER_OF_HIDDEN_Neurons_1 = 2
@@ -49,7 +49,7 @@ LAMBDA = 30  # how many children per generation
 LOWER = NUMBER_OF_WEIGHTS*[-1]
 UPPER = NUMBER_OF_WEIGHTS*[1]
 
-TIME_OUT = 300
+TIME_OUT = 45
 
 with open('IP.txt', 'r') as f:
     ip = f.readlines()[0]
