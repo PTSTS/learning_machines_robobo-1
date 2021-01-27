@@ -46,9 +46,17 @@ class Controller:
     def act(self, inputs):
         assert len(inputs) == self.nn.linear1.weight.shape[1]
         outputs = self.nn.forward(inputs)
-        left = outputs[0] * 50
-        right = outputs[1] * 50
+        forward = outputs[0].item() * 75 + 15
+        turn = outputs[1].item() ** 3
+        left = right = forward
+        if turn < 0:
+            left += (left + 75) * turn * 0.8
+            right -= (90 - right) * turn * 0.8
+        elif turn > 0:
+            left += (90 - left) * turn * 0.8
+            right -= (right + 75) * turn * 0.8
         return left, right
+
 
 if __name__ == '__main__':
     gene = [0.1] * 80 + [0.2] * 10 + [0.3] * 20 + [0.4] * 2

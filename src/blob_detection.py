@@ -12,7 +12,7 @@ def determine_closeness_blob(contour):
 
 
 def detect(image):
-    mask = cv2.inRange(image, (0, 140, 0), (20, 255, 20))
+    mask = cv2.inRange(image, (0, 0, 80), (60, 60, 255))
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contours) > 0:
         blob = max(contours, key=determine_closeness_blob)
