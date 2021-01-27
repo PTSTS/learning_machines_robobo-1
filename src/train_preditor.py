@@ -23,6 +23,7 @@ from blob_detection import detect
 import calendar
 from datetime import datetime
 import prey
+import pickle
 
 seed = 222
 def seed_everything(seed):
@@ -95,7 +96,7 @@ def fitness(c, weights):
         if distance <= 0.23: # maximum "catching" distance
             break
 
-    fitness_score = (current_time - start) / 1000
+    fitness_score = TIME_OUT + 1 - (current_time - start) / 1000
 
 
     # fitness_score += rob.collected_food()
@@ -173,10 +174,12 @@ population, logbook = algorithms.eaMuCommaLambda(population, toolbox, mu=MU, lam
                                                  cxpb=0.2, mutpb=0.7, ngen=NUMBER_OF_GENERATIONS, stats=stats,
                                                  halloffame=fittest, verbose=True)
 
+pickle.dump(population, open('./population_{}_{}.pkl'.format(seed, timestamp), 'wb+'), )
+pickle.dump(np.array(fittest), open('./fittest_{}_{}.pkl'.format(seed, timestamp), 'wb+'), )
 pd.DataFrame(logbook).to_csv(
     "./generations_fitness_{}_{}.csv".format(seed, timestamp), index=False
 )
-pd.DataFrame(np.array(fittest)[0,]).to_csv(
+pd.DataFrame(np.array(fittest)).to_csv(
     "./weights_{}_{}.csv".format(seed, timestamp), header=False, index=False
 )
 
