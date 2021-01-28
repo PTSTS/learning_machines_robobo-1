@@ -13,7 +13,7 @@ class SimulationRobobo(Robobo):
         self._clientID = None
         self._value_number = number
 
-    def connect(self, address='127.0.0.1', port=19998):
+    def connect(self, address='127.0.0.1', port=19998, prey = False):
         # vrep.simxFinish(-1)  # just in case, close all opened connections
         self._clientID = vrep.simxStart(address, port, True, True, 5000, 5)  # Connect to V-REP
         if self._clientID >= 0: #  and clientID_0 != -1:
@@ -27,7 +27,7 @@ class SimulationRobobo(Robobo):
         startTime = time.time()
         while time.time() - startTime < get_handles_timeout:
             try:
-                self.initialize_handles()
+                self.initialize_handles(prey = prey)
                 return self
             except vrep.VrepApiError as _e:
                 print("Handle initialization failed, retrying.")
@@ -40,7 +40,7 @@ class SimulationRobobo(Robobo):
             vrep.simxFinish(self._clientID)
         )
 
-    def initialize_handles(self):
+    def initialize_handles(self, prey = False):
         self._RightMotor = self._vrep_get_object_handle('Right_Motor{}'.format(self._value_number), vrep.simx_opmode_blocking)
         self._LeftMotor = self._vrep_get_object_handle('Left_Motor{}'.format(self._value_number), vrep.simx_opmode_blocking)
         self._Robobo = self._vrep_get_object_handle('Robobo{}'.format(self._value_number), vrep.simx_opmode_blocking)
@@ -61,10 +61,14 @@ class SimulationRobobo(Robobo):
         self._IrFrontR = self._vrep_get_object_handle('Ir_Front_R{}'.format(self._value_number), vrep.simx_opmode_blocking)
         self._IrFrontRFloor = self._vrep_get_object_handle('Ir_Front_R_Floor{}'.format(self._value_number),
                                                             vrep.simx_opmode_blocking)
-        self._TiltMotor = self._vrep_get_object_handle('Tilt_Motor{}'.format(self._value_number), vrep.simx_opmode_blocking)
-        self._PanMotor = self._vrep_get_object_handle('Pan_Motor{}'.format(self._value_number), vrep.simx_opmode_blocking)
-        self._FrontalCamera = self._vrep_get_object_handle('Frontal_Camera{}'.format(self._value_number), vrep.simx_opmode_blocking)
-
+        if not prey:
+            self._TiltMotor = self._vrep_get_object_handle('Tilt_Motor{}'.format(self._value_number), vrep.simx_opmode_blocking)
+            self._PanMotor = self._vrep_get_object_handle('Pan_Motor{}'.format(self._value_number), vrep.simx_opmode_blocking)
+            self._FrontalCamera = self._vrep_get_object_handle('Frontal_Camera{}'.format(self._value_number), vrep.simx_opmode_blocking)
+        else:
+            self._TiltMotor = None
+            self._PanMotor =  None
+            self._FrontalCamera = None
         # read a first value in streaming mode
         self._vrep_read_proximity_sensor_ignore_error(self._IrFrontC)
         self._vrep_read_proximity_sensor_ignore_error(self._IrBackC)
@@ -85,7 +89,8 @@ class SimulationRobobo(Robobo):
         vrep.simxGetObjectPosition(self._clientID, self._Robobo, -1, vrep.simx_opmode_buffer)
 
         # read a first value in buffer mode
-        self._vrep_get_vision_sensor_image_ignore_error(self._FrontalCamera, vrep.simx_opmode_streaming)
+        if self._TiltMotor != None:
+            self._vrep_get_vision_sensor_image_ignore_error(self._FrontalCamera, vrep.simx_opmode_streaming)
 
         self.wait_for_ping()
 
