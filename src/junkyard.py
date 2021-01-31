@@ -8,13 +8,22 @@ import cv2
 import sys
 import signal
 import prey
+# import deap
 import math
+# from deap import base, creator, tools, algorithms
 
 def terminate_program(signal_number, frame):
     print("Ctrl-C received, terminating program")
     sys.exit(1)
 
 def main():
+#     import pickle
+#     fit = pickle.load(open('fittest_222_1611757408.pkl', 'rb'))
+#     print(fit)
+#     pop = pickle.load(open('population_222_1611757408.pkl', 'rb'))
+#     print(pop)
+#     exit()
+
     signal.signal(signal.SIGINT, terminate_program)
 
     # rob = robobo.HardwareRobobo(camera=True).connect(address="192.168.1.7")
@@ -27,11 +36,14 @@ def main():
     # mask = cv2.inRange(image, (0, 140, 0), (20, 255, 20))
     mask = cv2.inRange(image, (0, 0, 80), (60, 60, 255))
     # mask = cv2.bitwise_not(mask, mask)
-    # masked = cv2.bitwise_and(image, image, mask=mask)
+    masked = cv2.bitwise_and(image, image, mask=mask)
     cv2.imshow('9', mask)
     cv2.imshow('1', image)
     cv2.waitKey(0)  # waits until a key is pressed
     cv2.destroyAllWindows()
+    
+    cv2.imwrite('masked.png', masked)
+    cv2.imwrite('test.png', image)
     exit()
     # prey_robot = robobo.SimulationRoboboPrey().connect(address='192.168.1.71', port=19989)
     # prey_controller = prey.Prey(robot=prey_robot, level=2, hardware=True)

@@ -2,9 +2,9 @@ from prey import *
 from controller import Controller
 
 class prey_controller_nn(Prey):
-    def __init__(self, gene):
+    def __init__(self, gene, robot):
         self.gene = gene
-        super(Prey, self).__init__()
+        super(prey_controller_nn, self).__init__(robot)
 
     def run(self):
         c = Controller(self.gene, 8, 2, 2)
